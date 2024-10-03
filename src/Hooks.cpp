@@ -5,7 +5,7 @@ namespace Hooks
 {
     void Install()
     {
-        SKSE::AllocTrampoline(28);
+        SKSE::AllocTrampoline(14);
         CombatHit::Install();
     }
 
