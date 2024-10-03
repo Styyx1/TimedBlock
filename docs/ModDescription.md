@@ -16,7 +16,7 @@ whenever you want, the magic effect from this mod lasts for 0.33 seconds and the
 
 ## Compatibilty:
 
-Works with Skyrim 1.5.97, 1.6.1170 and **maybe** Skyrim VR (i can not test VR as I have neither the game nor the hardware for VR)
+Works with Skyrim 1.5.97, 1.6.1170 and **maybe** Skyrim VR (I can't confirm and the offset I used for VR is just a guess)
 
 ## Credits:
 [SeaSparrow](https://next.nexusmods.com/profile/Shekhinaga/about-me?gameId=1704) for the damage hook
