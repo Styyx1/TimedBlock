@@ -33,7 +33,6 @@ namespace Events {
     {
         const RE::ControlMap* cm        = RE::ControlMap::GetSingleton();
         const RE::UserEvents* userEvent = RE::UserEvents::GetSingleton();
-        Settings*             settings  = Settings::GetSingleton();
 
         for (int i = RE::INPUT_DEVICE::kKeyboard; i <= RE::INPUT_DEVICE::kGamepad; ++i) {
             switch (i) {
@@ -76,9 +75,6 @@ namespace Events {
         blockKeyMouse.Process(a_event);
         blockKeyController.Process(a_event);
         dualBlockKey.Process(a_event);
-
-        logger::debug("SANITY CHECK PLS DELETE LATER \n Hotkey normal is: {} \n Hotkey Mouse is: {} \n Hotkey Controller is: {}\n Dual Block key is: {}", blockKey.GetPattern(), blockKeyMouse.GetPattern(), blockKeyController.GetPattern(), dualBlockKey.GetPattern());
-
 
         return Result::kContinue;
     }

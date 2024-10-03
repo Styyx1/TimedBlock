@@ -4,6 +4,7 @@
 class Utility : public Singleton<Utility>
 {
 public:
+
     static bool IsBlocking(RE::Actor* actor)
     {
         using func_t = decltype(&Utility::IsBlocking);
@@ -12,30 +13,6 @@ public:
     }
 
     inline static REL::Relocation<decltype(IsBlocking)> _IsBlocking;
-
-    static bool HasSpell(RE::Actor* actor, RE::SpellItem* spell)
-    {
-        using func_t = decltype(&Utility::HasSpell);
-
-        REL::Relocation<func_t> func{ Cache::HasSpellAddress };
-
-        return func(actor, spell);
-    }
-
-    inline static REL::Relocation<decltype(HasSpell)> _HasSpell;
-
-    inline static bool IsMoving(RE::PlayerCharacter* player)
-    {
-        auto playerState = player->AsActorState();
-        return (static_cast<bool>(playerState->actorState1.movingForward) || static_cast<bool>(playerState->actorState1.movingBack)
-            || static_cast<bool>(playerState->actorState1.movingLeft) || static_cast<bool>(playerState->actorState1.movingRight));
-    }
-
-    inline static RE::TESObjectWEAP* GetUnarmedWeapon()
-    {
-        auto** singleton{ reinterpret_cast<RE::TESObjectWEAP**>(Cache::getUnarmedWeaponAddress) };
-        return *singleton;
-    }
 
     inline static bool ActorHasActiveEffect(RE::Actor* a_actor, RE::EffectSetting* a_effect)
     {
@@ -62,28 +39,6 @@ public:
             setting = effect ? effect->GetBaseObject() : nullptr;
             if (setting) {
                 if (setting == a_effect) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    inline static float GetMaxHealth()
-    {
-        auto player = RE::PlayerCharacter::GetSingleton();
-
-        return player->GetActorValueModifier(RE::ACTOR_VALUE_MODIFIER::kTemporary, RE::ActorValue::kHealth)
-            + player->AsActorValueOwner()->GetPermanentActorValue(RE::ActorValue::kHealth);
-    }
-
-    inline static bool IsPowerAttacking(RE::Actor* actor)
-    {
-        if (auto high = actor->GetHighProcess()) {
-            if (const auto attackData = high->attackData) {
-                auto flags = attackData->data.flags;
-
-                if (flags && flags.any(RE::AttackData::AttackFlag::kPowerAttack)) {
                     return true;
                 }
             }

@@ -21,8 +21,8 @@ namespace Hooks
     {
         const Settings* settings = Settings::GetSingleton();
         float remaining = a_hitData->totalDamage;
-        if (Utility::ActorHasActiveEffect(a_this, settings->mgef_parry_window) && !a_hitData->weapon->IsBow() && !a_hitData->weapon->IsCrossbow() && !a_hitData->attackDataSpell) {
-            logger::debug("started hooked damage prevention for {}", a_this->GetName());            
+        if (Utility::ActorHasActiveEffect(a_this, settings->mgef_parry_window) && !a_hitData->weapon->IsBow() && !a_hitData->weapon->IsCrossbow() && !a_hitData->attackDataSpell && Utility::IsBlocking(a_this)) {
+            logger::debug("started hooked damage prevention for {} you got hit by: {}", a_this->GetName(), a_hitData->aggressor.get().get()->GetDisplayFullName());            
             a_hitData->totalDamage = 0.0f;
             _originalCall(a_this, a_hitData);
         }

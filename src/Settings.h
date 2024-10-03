@@ -8,7 +8,7 @@ public:
     void LogForm(RE::TESForm* form_to_log);
     inline static bool debug_logging{};
     inline static std::string dualblockKey = "V";
-    inline static double stagger_distance{ 25.0 };
+    inline static float stagger_distance{ 25.0 };
 
     RE::BGSPerk* damage_prevent_perk;
     RE::SpellItem* spell_parry;

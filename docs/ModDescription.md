@@ -21,5 +21,6 @@ Works with Skyrim 1.5.97, 1.6.1170 and **maybe** Skyrim VR (I can't confirm and 
 ## Credits:
 [SeaSparrow](https://next.nexusmods.com/profile/Shekhinaga/about-me?gameId=1704) for the damage hook
 [po3](https://next.nexusmods.com/profile/powerofthree/mods?gameId=1704) for clib-util and specifically the hotkey handling of it
-[thirdeyesqueegee](https://next.nexusmods.com/profile/ThirdEye3301/about-me) for the skse plugin template
+[colinswrath](https://next.nexusmods.com/profile/colinswrath/about-me?gameId=1704) for blade and blunt and most of the things that are in my Utility.h
+[thirdeyesqueegee](https://next.nexusmods.com/profile/ThirdEye3301/about-me?gameId=1704) for the skse plugin template
 and everyone who worked on SKSE and CommonLib

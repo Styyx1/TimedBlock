@@ -9,7 +9,6 @@ RE::BSEventNotifyControl OnHitManager::ProcessEvent(const RE::TESHitEvent* a_eve
 {
     using Result = RE::BSEventNotifyControl;
     using HitFlag = RE::TESHitEvent::Flag;
-    Utility* util = Utility::GetSingleton();
     if (!a_event || !a_event->cause || !a_event->target || a_event->projectile) {
         continueEv
     }
@@ -22,8 +21,7 @@ RE::BSEventNotifyControl OnHitManager::ProcessEvent(const RE::TESHitEvent* a_eve
         continueEv
     }
     if (a_event->flags.any(HitFlag::kHitBlocked) && a_event->target && !a_event->projectile) {
-        logger::debug;
-        ("entered block event");
+        logger::debug("entered block event");
         auto attacking_weap = RE::TESForm::LookupByID<RE::TESObjectWEAP>(a_event->source);
         if (!defender || !attacking_weap || !defender->GetActorRuntimeData().currentProcess || !defender->GetActorRuntimeData().currentProcess->high
             || !attacking_weap->IsMelee() || !defender->Get3D())
@@ -41,27 +39,17 @@ RE::BSEventNotifyControl OnHitManager::ProcessEvent(const RE::TESHitEvent* a_eve
             logger::debug("Attacker Attack Data Not Found!");
             continueEv
         }
-        auto meleeweap = util->getWieldingWeapon(aggressor);
+        //auto meleeweap = util->getWieldingWeapon(aggressor);
         auto leftHand  = defender->GetEquippedObject(true);
         auto rightHand = defender->GetEquippedObject(false);
-
+//currently shields and weapons are handled the same, but i want to leave the separation for possible future changes
         if (leftHand && leftHand->IsArmor()) {
             logger::debug("left hand is shield");
-            if (defender->IsPlayerRef()) {
-                ProcessHitForParry(defender, aggressor);
-                
-                
-                
-                //PlaySparks(defender);
-            }
+            ProcessHitForParry(defender, aggressor);            
         }
         else if (rightHand && rightHand->IsWeapon()) {
-            logger::debug("left hand is empty");
-            if (defender->IsPlayerRef()) {
-                logger::debug("blocker is player");
-                ProcessHitForParry(defender, aggressor);
-                //PlaySparks(defender);
-            }           
+            logger::debug("right hand is weapon");
+            ProcessHitForParry(defender, aggressor);
         }
     }
     continueEv
@@ -74,16 +62,13 @@ void OnHitManager::ProcessHitForParry(RE::Actor* target, RE::Actor* aggressor)
     if (Utility::PlayerHasActiveMagicEffect(settings->mgef_parry_window)) {
         logger::debug("condition is true");
         logger::debug("range is {}",15);
-        for (auto& actors : Utility::GetNearbyActors(target, 15, false)) {
+        for (auto& actors : Utility::GetNearbyActors(target, settings->stagger_distance, false)) {
             if (actors != aggressor) {
-                Utility::ApplySpell(target, actors, settings->spell_parry);
-                
+                Utility::ApplySpell(target, actors, settings->spell_parry);                
                 logger::debug("applied spell to {}", actors->GetName());
             }
         }
         Utility::ApplySpell(target, aggressor, settings->spell_parry);
-        //Utility::ApplySpell(aggressor, target, settings->spell_parry_buff);
-        //target->PlaceObjectAtMe(settings->APOSparksFlash, false);
     }
 }
 
