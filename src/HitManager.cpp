@@ -5,24 +5,23 @@
 
 #define continueEv return RE::BSEventNotifyControl::kContinue;
 
-RE::BSEventNotifyControl OnHitManager::ProcessEvent(const RE::TESHitEvent* a_event, RE::BSTEventSource<RE::TESHitEvent>* a_eventSource)
+RE::BSEventNotifyControl OnHitManager::ProcessEvent(const RE::TESHitEvent* a_event, RE::BSTEventSource<RE::TESHitEvent>*)
 {
     using Result = RE::BSEventNotifyControl;
     using HitFlag = RE::TESHitEvent::Flag;
     if (!a_event || !a_event->cause || !a_event->target || a_event->projectile) {
         continueEv
     }
-    auto defender = a_event->target ? a_event->target->As<RE::Actor>() : nullptr;
+    RE::Actor* defender = a_event->target ? a_event->target->As<RE::Actor>() : nullptr;
     if (!defender) {
         continueEv
     }
-    auto aggressor = a_event->cause ? a_event->cause->As<RE::Actor>() : nullptr;
+    RE::Actor* aggressor = a_event->cause ? a_event->cause->As<RE::Actor>() : nullptr;
     if (!aggressor) {
         continueEv
     }
     if (a_event->flags.any(HitFlag::kHitBlocked) && a_event->target && !a_event->projectile) {
-        logger::debug("entered block event");
-        auto attacking_weap = RE::TESForm::LookupByID<RE::TESObjectWEAP>(a_event->source);
+        RE::TESObjectWEAP* attacking_weap = RE::TESForm::LookupByID<RE::TESObjectWEAP>(a_event->source);
         if (!defender || !attacking_weap || !defender->GetActorRuntimeData().currentProcess || !defender->GetActorRuntimeData().currentProcess->high
             || !attacking_weap->IsMelee() || !defender->Get3D())
         {
@@ -34,14 +33,14 @@ RE::BSEventNotifyControl OnHitManager::ProcessEvent(const RE::TESHitEvent* a_eve
             logger::debug("Attack Actor Not Found!");
             continueEv
         }
-        auto data_aggressor = aggressor->GetActorRuntimeData().currentProcess->high->attackData;
+        auto& data_aggressor = aggressor->GetActorRuntimeData().currentProcess->high->attackData;
         if (!data_aggressor) {
             logger::debug("Attacker Attack Data Not Found!");
             continueEv
         }
         //auto meleeweap = util->getWieldingWeapon(aggressor);
-        auto leftHand  = defender->GetEquippedObject(true);
-        auto rightHand = defender->GetEquippedObject(false);
+        RE::TESForm* leftHand  = defender->GetEquippedObject(true);
+        RE::TESForm* rightHand = defender->GetEquippedObject(false);
 //currently shields and weapons are handled the same, but i want to leave the separation for possible future changes
         if (leftHand && leftHand->IsArmor()) {
             logger::debug("left hand is shield");
@@ -58,14 +57,13 @@ RE::BSEventNotifyControl OnHitManager::ProcessEvent(const RE::TESHitEvent* a_eve
 void OnHitManager::ProcessHitForParry(RE::Actor* target, RE::Actor* aggressor)
 {
     logger::debug("processHitEvent For Parry started");
-    auto settings = Settings::GetSingleton();
+    const Settings* settings = Settings::GetSingleton();
     if (Utility::PlayerHasActiveMagicEffect(settings->mgef_parry_window)) {
-        logger::debug("condition is true");
-        logger::debug("range is {}",15);
+        logger::debug("range is {}",settings->stagger_distance);
         for (auto& actors : Utility::GetNearbyActors(target, settings->stagger_distance, false)) {
             if (actors != aggressor) {
                 Utility::ApplySpell(target, actors, settings->spell_parry);                
-                logger::debug("applied spell to {}", actors->GetName());
+                logger::debug("applied {} to {}",settings->spell_parry->GetName(), actors->GetName());
             }
         }
         Utility::ApplySpell(target, aggressor, settings->spell_parry);
