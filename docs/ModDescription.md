@@ -15,8 +15,13 @@ whenever you want, the magic effect from this mod lasts for 0.33 seconds and the
 [Address Library](https://www.nexusmods.com/skyrimspecialedition/mods/32444) for your game version
 
 ## Compatibilty:
-
+Does not work with other timed block mods I think. I did not test that.
 Works with Skyrim 1.5.97, 1.6.1170 and **maybe** Skyrim VR (I can't confirm and the offset I used for VR is just a guess)
+
+## How is that one different to other timed block mods?
+I don't know, I just wanted to have something simple.
+All this mod does is prevent damage on timed block and stagger the attacker + close enemies.
+Nothing more, nothing less.
 
 ## Credits:
 - [SeaSparrow](https://next.nexusmods.com/profile/Shekhinaga/about-me?gameId=1704) for the damage hook

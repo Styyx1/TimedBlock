@@ -13,9 +13,9 @@ namespace Hooks
 
         static void PreventDamage(RE::Actor* a_this, RE::HitData* a_hitData);
 
-        static void Hit(RE::Actor* a_this, RE::HitData* a_hitData);
+        static void CHit(RE::Actor* a_this, RE::HitData* a_hitData);
 
-        static inline REL::Relocation<decltype(&Hit)> _originalCall;
+        static inline REL::Relocation<decltype(&CHit)> _originalCall;
     };
 
 } // namespace Hooks
