@@ -53,7 +53,6 @@ RE::BSEventNotifyControl OnHitManager::ProcessEvent(const RE::TESHitEvent* a_eve
     }
     continueEv
 }
-
 void OnHitManager::ProcessHitForParry(RE::Actor* target, RE::Actor* aggressor)
 {
     logger::debug("processHitEvent For Parry started");
@@ -69,7 +68,6 @@ void OnHitManager::ProcessHitForParry(RE::Actor* target, RE::Actor* aggressor)
         Utility::ApplySpell(target, aggressor, settings->spell_parry);
     }
 }
-
 void OnHitManager::Register()
 {
     RE::ScriptEventSourceHolder* eventHolder = RE::ScriptEventSourceHolder::GetSingleton();

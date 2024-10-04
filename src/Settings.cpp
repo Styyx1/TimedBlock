@@ -12,11 +12,9 @@ bool ReadHotkey(const CSimpleIniA& ini, const char* name, std::string& pattern, 
     }
     return false;
 }
-
 void Settings::LoadSettings() noexcept
 {
     logger::info("Loading settings");
-
     CSimpleIniA ini;
 
     ini.SetUnicode();
@@ -30,9 +28,6 @@ void Settings::LoadSettings() noexcept
         spdlog::set_level(spdlog::level::debug);
         logger::debug("Debug logging enabled");
     }
-
-    // Load settings
-
     logger::info("Loaded settings");
     logger::info("");
 }
@@ -60,6 +55,4 @@ void Settings::LoadForms() noexcept
     LogForm(mgef_parry_window);
     damage_prevent_perk = dh->LookupForm<RE::BGSPerk>(damagePreventPerk, mod);
     LogForm(damage_prevent_perk);
-
-
 }

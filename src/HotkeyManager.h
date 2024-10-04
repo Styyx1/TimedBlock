@@ -25,7 +25,6 @@ namespace Events {
         HotkeyManager& operator=(const HotkeyManager&) = delete;
         HotkeyManager& operator=(HotkeyManager&&) = delete;
     };
-
     class MenuManager : public RE::BSTEventSink<RE::MenuOpenCloseEvent>
     {
         // Singleton stuff
@@ -42,8 +41,7 @@ namespace Events {
         static void SetBlockKey();
 
     protected:
-        RE::BSEventNotifyControl ProcessEvent(const RE::MenuOpenCloseEvent* event, RE::BSTEventSource<RE::MenuOpenCloseEvent>* a_eventSource) override;    
-
+        RE::BSEventNotifyControl ProcessEvent(const RE::MenuOpenCloseEvent* event, RE::BSTEventSource<RE::MenuOpenCloseEvent>* a_eventSource) override;
     };
 }
 

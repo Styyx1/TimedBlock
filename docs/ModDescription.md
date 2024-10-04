@@ -17,6 +17,7 @@ whenever you want, the magic effect from this mod lasts for 0.33 seconds and the
 ## Compatibilty:
 Does not work with other timed block mods I think. I did not test that.
 Works with Skyrim 1.5.97, 1.6.1170 and **maybe** Skyrim VR (I can't confirm and the offset I used for VR is just a guess)
+I only work with 1.6.1170 and that's the version i will troubleshoot
 
 ## How is that one different to other timed block mods?
 I don't know, I just wanted to have something simple.
