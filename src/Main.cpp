@@ -43,7 +43,9 @@ void Listener(SKSE::MessagingInterface::Message* message) noexcept
 SKSEPluginLoad(const SKSE::LoadInterface* skse)
 {
     Init(skse);
+#ifndef SKYRIM_SUPPORT_AE
     InitializeLog();
+#endif
     
     Cache::CacheAddLibAddresses();
     if (const auto messaging{ SKSE::GetMessagingInterface() }; !messaging->RegisterListener(Listener)) {
