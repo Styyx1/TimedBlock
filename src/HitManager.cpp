@@ -62,7 +62,7 @@ RE::BSEventNotifyControl OnHitManager::ProcessEvent(const RE::TESHitEvent* a_eve
 void OnHitManager::ProcessHitForParry(RE::Actor* target, RE::Actor* aggressor)
 {
     logger::debug("processHitEvent For Parry started");
-    if (Utility::PlayerHasActiveMagicEffect(Settings::mgef_parry_window)) {
+    if (Utility::ActorHasActiveEffect(target, Settings::mgef_parry_window)) {
         logger::debug("range is {}",Settings::stagger_distance);
         for (auto& actors : Utility::GetNearbyActors(target, Settings::stagger_distance, false)) {
             if (actors != aggressor) {
