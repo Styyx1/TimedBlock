@@ -1,7 +1,7 @@
 #pragma once
 #include "Cache.h"
 
-class Utility : public Singleton<Utility>
+class Utility 
 {
 public:
 
@@ -16,16 +16,20 @@ public:
 
     inline static bool ActorHasActiveEffect(RE::Actor* a_actor, RE::EffectSetting* a_effect)
     {
-        auto activeEffects = a_actor->AsMagicTarget()->GetActiveEffectList();
+        auto activeEffects = a_actor->GetActiveEffectList();
         RE::EffectSetting* setting       = nullptr;
-        for (auto& effect : *activeEffects) {
-            setting = effect ? effect->GetBaseObject() : nullptr;
-            if (setting) {
-                if (setting == a_effect) {
-                    return true;
+        if (!activeEffects->empty()) {
+            for (RE::ActiveEffect* effect : *activeEffects) {
+                if (effect; !effect->flags.any(RE::ActiveEffect::Flag::kInactive)) {
+                    setting = effect ? effect->GetBaseObject() : nullptr;
+                    if (setting) {
+                        if (setting == a_effect) {
+                            return true;
+                        }
+                    }
                 }
             }
-        }
+        } 
         return false;
     }
 
@@ -33,16 +37,20 @@ public:
     {
         auto player = RE::PlayerCharacter::GetSingleton();
 
-        auto               activeEffects = player->AsMagicTarget()->GetActiveEffectList();
+        auto               activeEffects = player->GetActiveEffectList();
         RE::EffectSetting* setting       = nullptr;
-        for (auto& effect : *activeEffects) {
-            setting = effect ? effect->GetBaseObject() : nullptr;
-            if (setting) {
-                if (setting == a_effect) {
-                    return true;
+        if (!activeEffects->empty()) {
+            for (RE::ActiveEffect* effect : *activeEffects) {
+                if (effect; !effect->flags.any(RE::ActiveEffect::Flag::kInactive)) {
+                    setting = effect ? effect->GetBaseObject() : nullptr;
+                    if (setting) {
+                        if (setting == a_effect) {
+                            return true;
+                        }
+                    }
                 }
             }
-        }
+        } 
         return false;
     }
 

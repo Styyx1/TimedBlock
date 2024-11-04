@@ -17,12 +17,10 @@ namespace Events {
     }
     void HotkeyManager::TimedBlockKey(const hotkeys::KeyCombination* key)
     {
-        Utility* util = Utility::GetSingleton();
-        Settings* set = Settings::GetSingleton();
         RE::PlayerCharacter* p = Cache::GetPlayerSingleton();
-        if (!util->PlayerHasActiveMagicEffect(set->mgef_parry_window)) {
-            util->ApplySpell(p, p, set->spell_parry_window);
-            logger::debug("applied {} to {}", set->spell_parry_window->GetName(), p->GetDisplayFullName());
+        if (!Utility::PlayerHasActiveMagicEffect(Settings::mgef_parry_window)) {
+            Utility::ApplySpell(p, p, Settings::spell_parry_window);
+            logger::debug("applied {} to {}", Settings::spell_parry_window->GetName(), p->GetDisplayFullName());
         }        
         return;
     }
@@ -105,7 +103,7 @@ namespace Events {
         if (a_event->menuName != RE::JournalMenu::MENU_NAME) {
             return Result::kContinue;
         }
-        if (a_event->opening) {
+        if (!a_event->opening) {
             SetBlockKey();
         }
         return Result::kContinue;

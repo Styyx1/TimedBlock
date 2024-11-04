@@ -9,11 +9,11 @@ namespace Cache
     {
         // 1.6 = 37952
         // 1.5.97 = 36927
-        IsBlockingAddress = REL::RelocationID(36927, 37952).address();
+        IsBlockingAddress = REL_ID(36927, 37952).address();
 
         // 1.6 = 403521
         // 1.5 = 517014
-        PlayerSingletonAddress = REL::RelocationID(517014, 403521).address();
+        PlayerSingletonAddress = REL_ID(517014, 403521).address();
     }
 
     inline RE::PlayerCharacter* GetPlayerSingleton()
