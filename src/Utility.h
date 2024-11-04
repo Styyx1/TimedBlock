@@ -52,44 +52,7 @@ public:
             }
         } 
         return false;
-    }
-
-    // Credit: D7ry for getWieldingWeapon in ValhallaCombat
-    // https://github.com/D7ry/valhallaCombat/blob/48fb4c3b9bb6bbaa691ce41dbd33f096b74c07e3/src/include/Utils.cpp#L10
-    inline static RE::TESObjectWEAP* getWieldingWeapon(RE::Actor* a_actor)
-    {
-        bool dual_wielding = false;
-        auto weapon        = a_actor->GetAttackingWeapon();
-        if (weapon) {
-            dual_wielding = false;
-            return weapon->object->As<RE::TESObjectWEAP>();
-        }
-        auto rhs = a_actor->GetEquippedObject(false);
-        if (rhs && rhs->IsWeapon()) {
-            dual_wielding = false;
-            return rhs->As<RE::TESObjectWEAP>();
-        }
-        auto lhs = a_actor->GetEquippedObject(true);
-        if (lhs && lhs->IsWeapon()) {
-            dual_wielding = false;
-            return lhs->As<RE::TESObjectWEAP>();
-        }
-
-        return nullptr;
-    }
-
-    inline static bool IsDualWielding(RE::Actor* a_actor)
-    {
-        auto weapon = a_actor->GetAttackingWeapon();
-        auto rhs    = a_actor->GetEquippedObject(false);
-        auto lhs    = a_actor->GetEquippedObject(true);
-        if (weapon && rhs && lhs && lhs->IsWeapon() && rhs->IsWeapon()) {
-            logger::debug("dual wielding is active");
-            return true;
-        }
-        else
-            return false;
-    }
+    }    
 
     inline static std::vector<RE::Actor*> GetNearbyActors(RE::TESObjectREFR* a_ref, float a_radius, bool a_ignorePlayer)
     {

@@ -46,7 +46,7 @@ SKSEPluginLoad(const SKSE::LoadInterface* skse)
 #ifndef SKYRIM_SUPPORT_AE
     InitializeLog();
 #endif
-    
+    SKSE::AllocTrampoline(14);
     Cache::CacheAddLibAddresses();
     if (const auto messaging{ SKSE::GetMessagingInterface() }; !messaging->RegisterListener(Listener)) {
         return false;
