@@ -19,5 +19,6 @@ public:
     static inline RE::SpellItem* spell_parry_window;
     static inline RE::SpellItem* spell_parry_buff;
     static inline RE::EffectSetting* mgef_parry_window;
+    static inline RE::BGSExplosion* timed_block_explosion;
 
 };

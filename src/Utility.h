@@ -115,4 +115,24 @@ public:
             caster->GetMagicCaster(RE::MagicSystem::CastingSource::kInstant)->CastSpellImmediate(spell, false, target, 1.0F, false, 0.0F, nullptr);
         }
     }
+
+    // Credit: D7ry for getWieldingWeapon in ValhallaCombat
+    // https://github.com/D7ry/valhallaCombat/blob/48fb4c3b9bb6bbaa691ce41dbd33f096b74c07e3/src/include/Utils.cpp#L10
+    inline static RE::TESObjectWEAP* getWieldingWeapon(RE::Actor* a_actor)
+    {
+        auto weapon        = a_actor->GetAttackingWeapon();
+        if (weapon) {
+            return weapon->object->As<RE::TESObjectWEAP>();
+        }
+        auto rhs = a_actor->GetEquippedObject(false);
+        if (rhs && rhs->IsWeapon()) {
+            return rhs->As<RE::TESObjectWEAP>();
+        }
+        auto lhs = a_actor->GetEquippedObject(true);
+        if (lhs && lhs->IsWeapon()) {
+            return lhs->As<RE::TESObjectWEAP>();
+        }
+        return nullptr;
+    }
+
 };

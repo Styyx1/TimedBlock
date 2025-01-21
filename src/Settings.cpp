@@ -70,6 +70,7 @@ void Settings::LoadForms() noexcept
     //const int parrySelfBuff = 0x808; not yet implemented in esp
     const int parryWindowEFFECT = 0x801;
     const int damagePreventPerk = 0x800;
+    const int tb_explosionID = 0x805;
     RE::TESDataHandler* const dh = RE::TESDataHandler::GetSingleton();
 
     if (timed_block_perk_form_id) {
@@ -83,6 +84,8 @@ void Settings::LoadForms() noexcept
     LogForm(spell_parry_window);
     mgef_parry_window = dh->LookupForm<RE::EffectSetting>(parryWindowEFFECT, mod);
     LogForm(mgef_parry_window);
+    timed_block_explosion = dh->LookupForm<RE::BGSExplosion>(tb_explosionID, mod);
+    LogForm(timed_block_explosion);
     //damage_prevent_perk = dh->LookupForm<RE::BGSPerk>(damagePreventPerk, mod);
     
 }

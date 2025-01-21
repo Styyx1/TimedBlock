@@ -44,13 +44,12 @@ RE::BSEventNotifyControl OnHitManager::ProcessEvent(const RE::TESHitEvent* a_eve
             logger::debug("Attacker Attack Data Not Found!");
             continueEv
         }
-        //auto meleeweap = util->getWieldingWeapon(aggressor);
         RE::TESForm* leftHand  = defender->GetEquippedObject(true);
         RE::TESForm* rightHand = defender->GetEquippedObject(false);
 //currently shields and weapons are handled the same, but i want to leave the separation for possible future changes
         if (leftHand && leftHand->IsArmor()) {
             logger::debug("left hand is shield");
-            ProcessHitForParry(defender, aggressor);            
+            ProcessHitForParry(defender, aggressor);
         }
         else if (rightHand && rightHand->IsWeapon()) {
             logger::debug("right hand is weapon");
@@ -71,6 +70,7 @@ void OnHitManager::ProcessHitForParry(RE::Actor* target, RE::Actor* aggressor)
             }
         }
         Utility::ApplySpell(target, aggressor, Settings::spell_parry);
+        target->PlaceObjectAtMe(Settings::timed_block_explosion, false);
     }
 }
 void OnHitManager::Register()
