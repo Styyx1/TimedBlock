@@ -53,7 +53,9 @@ RE::BSEventNotifyControl OnHitManager::ProcessEvent(const RE::TESHitEvent* a_eve
         }
         else if (rightHand && rightHand->IsWeapon()) {
             logger::debug("right hand is weapon");
-            ProcessHitForParry(defender, aggressor);
+            if (!Settings::only_shield_tb) {
+                ProcessHitForParry(defender, aggressor);
+            }            
         }
     }
     continueEv
@@ -63,18 +65,35 @@ void OnHitManager::ProcessHitForParry(RE::Actor* target, RE::Actor* aggressor)
     logger::debug("processHitEvent For Parry started");
     if (Utility::ActorHasActiveEffect(target, Settings::mgef_parry_window)) {
         logger::debug("range is {}",Settings::stagger_distance);
-        for (auto& actors : Utility::GetNearbyActors(target, Settings::stagger_distance, false)) {
-            if (actors != aggressor) {
-                Utility::ApplySpell(target, actors, Settings::spell_parry);                
-                logger::debug("applied {} to {}",Settings::spell_parry->GetName(), actors->GetName());
+        if (PerkLockedStagger(target, Settings::damage_prevent_perk)) {
+            for (auto& actors : Utility::GetNearbyActors(target, Settings::stagger_distance, false)) {
+                if (actors != aggressor) {
+                    Utility::ApplySpell(target, actors, Settings::spell_parry);                
+                    logger::debug("applied {} to {}",Settings::spell_parry->GetName(), actors->GetName());
+                }
             }
-        }
-        Utility::ApplySpell(target, aggressor, Settings::spell_parry);
-        target->PlaceObjectAtMe(Settings::timed_block_explosion, false);
+            Utility::ApplySpell(target, aggressor, Settings::spell_parry);
+            target->PlaceObjectAtMe(Settings::timed_block_explosion, false);
+        }        
     }
 }
 void OnHitManager::Register()
 {
     RE::ScriptEventSourceHolder* eventHolder = RE::ScriptEventSourceHolder::GetSingleton();
     eventHolder->AddEventSink(OnHitManager::GetSingleton());
+}
+
+bool OnHitManager::PerkLockedStagger(RE::Actor* target, RE::BGSPerk* a_perk)
+{
+    bool result = true;
+    if (Settings::perk_lock_stagger) {
+        if (target->HasPerk(a_perk)) {
+            result = true;
+        }
+        else {
+            result = false;
+        }
+    }
+
+    return result;
 }

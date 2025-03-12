@@ -7,10 +7,12 @@ public:
     static void LoadForms() noexcept;
     static void LogForm(RE::TESForm* form_to_log);
     static RE::FormID ParseFormID(const std::string& str);
-    inline static bool debug_logging{};
-    static inline bool perk_locked_block{};
+    inline static bool debug_logging{false};
+    static inline bool perk_locked_block{false};
+    static inline bool only_shield_tb{false};
+    static inline bool perk_lock_stagger{ false }; 
     inline static std::string dualblockKey = "V";
-    inline static float stagger_distance{ 25.0 };
+    inline static float stagger_distance{ 128.0f };
     inline static std::string perkModName;
 
     static inline RE::FormID timed_block_perk_form_id;

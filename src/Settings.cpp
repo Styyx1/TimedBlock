@@ -22,7 +22,9 @@ void Settings::LoadSettings() noexcept
     const auto manager = Events::HotkeyManager::GetSingleton();
     debug_logging = ini.GetBoolValue("Log", "Debug");
     ini::get_value(ini, stagger_distance, "", "fStaggerDistance");
-    perk_locked_block = ini.GetBoolValue("", "bPerkLockedBlock");
+    perk_locked_block = ini.GetBoolValue("", "bPerkLockedBlock", false);
+    only_shield_tb = ini.GetBoolValue("", "bOnlyWithShield", false);
+    perk_lock_stagger = ini.GetBoolValue("", "bPerkLockedStagger", false);
     //ini::get_value(ini, perk_locked_block, "", "bPerkLockedBlock");
     ReadHotkey(ini, "sBlockKey", dualblockKey, manager->blockKey);
     std::string block_perk_id;
