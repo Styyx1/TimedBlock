@@ -16,8 +16,7 @@ namespace Hooks
         _originalCall = trampoline.write_call<5>(target.address(), &CHit);
     }
     void CombatHit::PreventDamage(RE::Actor* a_this, RE::HitData* a_hitData)
-    {
-        
+    {        
         if (a_hitData) {
             float remaining = 0.0f;
             remaining = a_hitData->totalDamage;
@@ -29,21 +28,16 @@ namespace Hooks
                             if (Settings::damage_prevent_perk != nullptr && a_this->HasPerk(Settings::damage_prevent_perk)) {
                                 logger::debug("has perk");
                                 a_hitData->totalDamage = 0.0f;
-                                _originalCall(a_this, a_hitData);
-                                a_hitData->totalDamage = 0.0f;
                                 return;
                             }
                             else {   
                                 logger::debug("perk lock bool is true, but doesn't have perk");
-                                _originalCall(a_this, a_hitData);
                                 a_hitData->totalDamage = remaining;
                                 return;
                             }
                         }
                         else {
                             logger::debug("perk lock is false");
-                            a_hitData->totalDamage = 0.0f;            
-                            _originalCall(a_this, a_hitData);
                             a_hitData->totalDamage = 0.0f;
                             return;
                         }
@@ -55,13 +49,10 @@ namespace Hooks
                         if (Settings::damage_prevent_perk != nullptr && a_this->HasPerk(Settings::damage_prevent_perk)) {
                             logger::debug("has perk");
                             a_hitData->totalDamage = 0.0f;
-                            _originalCall(a_this, a_hitData);
-                            a_hitData->totalDamage = 0.0f;
                             return;
                         }
                         else {   
                             logger::debug("perk lock bool is true, but doesn't have perk");
-                            _originalCall(a_this, a_hitData);
                             a_hitData->totalDamage = remaining;
                             return;
                         }
@@ -69,21 +60,15 @@ namespace Hooks
                     else {
                         logger::debug("perk lock is false");
                         a_hitData->totalDamage = 0.0f;            
-                        _originalCall(a_this, a_hitData);
-                        a_hitData->totalDamage = 0.0f;
                         return;
                     }
-                }
-                            
+                }                            
             }
             else {
-                _originalCall(a_this, a_hitData);
                 a_hitData->totalDamage = remaining;
                 return;
             }
-
-        }
-        
+        }        
     }
     void CombatHit::CHit(RE::Actor* a_this, RE::HitData* a_hitData)
     {
