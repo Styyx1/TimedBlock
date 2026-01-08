@@ -1,21 +1,17 @@
 #pragma once
 
-class OnHitManager : public RE::BSTEventSink<RE::TESHitEvent>
-{
-public:
+namespace Events {
 
-    static OnHitManager* GetSingleton();
+    using RES = RE::BSEventNotifyControl;
 
-    RE::BSEventNotifyControl ProcessEvent(const RE::TESHitEvent* a_event, RE::BSTEventSource<RE::TESHitEvent>* a_eventSource) override;
-    static void ProcessHitForParry(RE::Actor* target, RE::Actor* aggressor);
-    static void Register();
-    static bool PerkLockedStagger(RE::Actor* target, RE::BGSPerk* a_perk);
+    struct TimedBlock : REX::Singleton<TimedBlock>, RE::BSTEventSink<RE::TESHitEvent> {
+        void InstallHit();
 
-private:
-    OnHitManager() = default;
-    OnHitManager(const OnHitManager&) = delete;
-    OnHitManager(OnHitManager&&) = delete;
-    OnHitManager& operator=(const OnHitManager&) = delete;
-    OnHitManager& operator=(OnHitManager&&) = delete;
-
-};
+    private: 
+        RES ProcessEvent(const RE::TESHitEvent* a_event, RE::BSTEventSource<RE::TESHitEvent>*) override;
+        void ProcessParry(RE::Actor* a_aggressor, RE::Actor* a_target, bool attackedByHandToHand);
+        bool IsStaggerPerkLocked() const;
+        bool CanStaggerWithPerkLock(RE::Actor* a_target) const;
+        void IncreaseTBCounter();
+    };
+}

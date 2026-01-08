@@ -2,3 +2,9 @@
 	path = lib/commonlibsse
 	url = https://github.com/powerof3/CommonLibSSE
 	branch = dev
+[submodule "extern/styyx-util"]
+	path = extern/styyx-util
+	url = https://github.com/Styyx1/StyyxUtils
+[submodule "extern/clib-util"]
+	path = extern/clib-util
+	url = https://github.com/powerof3/CLibUtil

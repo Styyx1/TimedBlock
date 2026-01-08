@@ -3,6 +3,8 @@
 #include "Cache.h"
 #include "HotkeyManager.h"
 #include "HitManager.h"
+#include "menu.h"
+
 
 void InitializeLog()
 {
@@ -26,20 +28,20 @@ void InitializeLog()
 void Listener(SKSE::MessagingInterface::Message* message) noexcept
 {
     if (message->type == SKSE::MessagingInterface::kDataLoaded) {
-        Settings::LoadSettings();
-        Settings::LoadForms();
-        Events::HotkeyManager::Register();
-        Events::MenuManager::RegisterMenuEvents();
-        OnHitManager::Register();
+
+        SKSE::Translation::ParseTranslation("SimpleTimedBlock");
+        Menu::RegisterTBMenu();
+        Menu::TranslateMenu();
+        Config::Forms::GetSingleton()->LoadForms();
+        Events::InputEventListener::GetSingleton()->RegisterInput();
+        Events::TimedBlock::GetSingleton()->InstallHit();
         Hooks::Install();
-    }
-    if (message->type == SKSE::MessagingInterface::kPostLoadGame) {
-        Events::HotkeyManager::GetSingleton()->SetBlockKey();
-    }
-    if (message->type == SKSE::MessagingInterface::kNewGame) {
-        Events::HotkeyManager::GetSingleton()->SetBlockKey();
+        Config::Options::perk_locked_block.SetValue(false);
+        Config::Options::GetSingleton()->UpdateSettings(true);
+        Menu::RegisterMenuCloseEvent();
     }
 }
+
 SKSEPluginLoad(const SKSE::LoadInterface* skse)
 {
     Init(skse);
@@ -48,6 +50,8 @@ SKSEPluginLoad(const SKSE::LoadInterface* skse)
 #endif
     SKSE::AllocTrampoline(14);
     Cache::CacheAddLibAddresses();
+    Config::Options::GetSingleton()->UpdateSettings(false);
+    
     if (const auto messaging{ SKSE::GetMessagingInterface() }; !messaging->RegisterListener(Listener)) {
         return false;
     }

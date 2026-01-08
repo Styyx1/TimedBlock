@@ -3,10 +3,11 @@ set_xmakever("2.8.2")
 
 -- includes
 includes("lib/commonlibsse")
+includes("extern/styyx-util")
 
 -- set project
 set_project("simple-timed-block")
-set_version("1.1.0")
+set_version("2.0.0")
 set_license("GPL-3.0")
 
 -- set defaults
@@ -23,16 +24,18 @@ add_rules("plugin.vsxmake.autoupdate")
 
 -- set configs
 set_config("skyrim_ae", true)
+set_config("rex_toml", true)
 
 -- add requires
-add_requires("simpleini")
+
 add_requires("spdlog", { configs = { header_only = false } })
 
 -- targets
 target("simple-timed-block")
     -- add dependencies to target
     add_deps("commonlibsse")
-    add_packages("fmt", "spdlog", "simpleini")
+    add_deps("styyx-util")
+    add_packages("fmt", "spdlog")
     if has_config("skyrim_ae") then
         set_targetdir("/build/SkyrimAE/skse/plugins")
     else
@@ -50,22 +53,5 @@ add_files("src/**.cpp")
 add_headerfiles("src/**.h")
 add_includedirs("src")
 set_pcxxheader("src/pch.h")
-
-after_build(function(target)
-    local copy = function(env, ext)
-        for _, env in pairs(env:split(";")) do
-            if os.exists(env) then
-                local plugins = path.join(env, ext, "SKSE/Plugins")
-                os.mkdir(plugins)
-                os.trycp(target:targetfile(), plugins)
-                os.trycp(target:symbolfile(), plugins)
-            end
-        end
-    end
-    if os.getenv("XSE_TES5_MODS_PATH") then
-        copy(os.getenv("XSE_TES5_MODS_PATH"), target:name())
-    elseif os.getenv("XSE_TES5_GAME_PATH") then
-        copy(os.getenv("XSE_TES5_GAME_PATH"), "Data")
-    end
-end)
+add_includedirs("extern/clib-util/include", {public = true})
 

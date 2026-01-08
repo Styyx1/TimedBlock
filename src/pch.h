@@ -2,17 +2,18 @@
 
 
 #include <RE/Skyrim.h>
-#include <REX/W32.h>
 #include <SKSE/SKSE.h>
+#include <REX/REX/Singleton.h>
+#include <REX/REX/TOML.h>
 #include <spdlog/sinks/basic_file_sink.h>
-#include <spdlog/sinks/msvc_sink.h>
-#include <extern/CLIBUtil/utils.hpp>
-#include <source_location>
+#include <styyx-utils.h>
+#include <CLIBUtil/hotkeys.hpp>
 
 using namespace std::literals;
 namespace logger = SKSE::log;
+using namespace StyyxUtil;
 
-using namespace clib_util;
+
 
 #ifdef SKYRIM_SUPPORT_AE
 #	define REL_ID(se, ae) REL::ID(ae)

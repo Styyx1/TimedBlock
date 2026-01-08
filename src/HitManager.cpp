@@ -1,99 +1,101 @@
 #include "HitManager.h"
-#include "Utility.h"
 #include "Settings.h"
-#include "Hooks.h"
 
-#define continueEv return RE::BSEventNotifyControl::kContinue;
-
-OnHitManager* OnHitManager::GetSingleton()
-{
-    static OnHitManager singleton;
-    return &singleton;
-}
-
-RE::BSEventNotifyControl OnHitManager::ProcessEvent(const RE::TESHitEvent* a_event, RE::BSTEventSource<RE::TESHitEvent>*)
-{
-    using Result = RE::BSEventNotifyControl;
-    using HitFlag = RE::TESHitEvent::Flag;
-    if (!a_event || !a_event->cause || !a_event->target || a_event->projectile) {
-        continueEv
-    }
-    RE::Actor* defender = a_event->target ? a_event->target->As<RE::Actor>() : nullptr;
-    if (!defender) {
-        continueEv
-    }
-    RE::Actor* aggressor = a_event->cause ? a_event->cause->As<RE::Actor>() : nullptr;
-    if (!aggressor) {
-        continueEv
-    }
-    if (a_event->flags.any(HitFlag::kHitBlocked) && a_event->target && !a_event->projectile) {
-        RE::TESObjectWEAP* attacking_weap = RE::TESForm::LookupByID<RE::TESObjectWEAP>(a_event->source);
-        if (!defender || !attacking_weap || !defender->currentProcess || !defender->currentProcess->high
-            || !attacking_weap->IsMelee() || !defender->Get3D())
-        {
-            logger::debug("block event, first continue");
-            continueEv
-        }
-
-        if (!aggressor || !aggressor->currentProcess || !aggressor->currentProcess->high) {
-            logger::debug("Attack Actor Not Found!");
-            continueEv
-        }
-        auto& data_aggressor = aggressor->currentProcess->high->attackData;
-        if (!data_aggressor) {
-            logger::debug("Attacker Attack Data Not Found!");
-            continueEv
-        }
-        RE::TESForm* leftHand  = defender->GetEquippedObject(true);
-        RE::TESForm* rightHand = defender->GetEquippedObject(false);
-//currently shields and weapons are handled the same, but i want to leave the separation for possible future changes
-        if (leftHand && leftHand->IsArmor()) {
-            logger::debug("left hand is shield");
-            ProcessHitForParry(defender, aggressor);
-        }
-        else if (rightHand && rightHand->IsWeapon()) {
-            logger::debug("right hand is weapon");
-            if (!Settings::only_shield_tb) {
-                ProcessHitForParry(defender, aggressor);
-            }            
-        }
-    }
-    continueEv
-}
-void OnHitManager::ProcessHitForParry(RE::Actor* target, RE::Actor* aggressor)
-{
-    logger::debug("processHitEvent For Parry started");
-    if (Utility::ActorHasActiveEffect(target, Settings::mgef_parry_window)) {
-        logger::debug("range is {}",Settings::stagger_distance);
-        if (PerkLockedStagger(target, Settings::damage_prevent_perk)) {
-            for (auto& actors : Utility::GetNearbyActors(target, Settings::stagger_distance, false)) {
-                if (actors != aggressor) {
-                    Utility::ApplySpell(target, actors, Settings::spell_parry);                
-                    logger::debug("applied {} to {}",Settings::spell_parry->GetName(), actors->GetName());
-                }
-            }
-            Utility::ApplySpell(target, aggressor, Settings::spell_parry);
-            target->PlaceObjectAtMe(Settings::timed_block_explosion, false);
+namespace Events {
+    void TimedBlock::InstallHit()
+    {
+        if (RE::ScriptEventSourceHolder* eventHolder = RE::ScriptEventSourceHolder::GetSingleton(); eventHolder) {
+            eventHolder->AddEventSink(this);
+            logger::info("Registered for <RE::TESHitEvent>");
         }        
     }
-}
-void OnHitManager::Register()
-{
-    RE::ScriptEventSourceHolder* eventHolder = RE::ScriptEventSourceHolder::GetSingleton();
-    eventHolder->AddEventSink(OnHitManager::GetSingleton());
-}
+    RES TimedBlock::ProcessEvent(const RE::TESHitEvent* a_event, RE::BSTEventSource<RE::TESHitEvent>*)
+    {
+        using HitFlag = RE::TESHitEvent::Flag;
 
-bool OnHitManager::PerkLockedStagger(RE::Actor* target, RE::BGSPerk* a_perk)
-{
-    bool result = true;
-    if (Settings::perk_lock_stagger) {
-        if (target->HasPerk(a_perk)) {
-            result = true;
+        if (!a_event || !a_event->cause || !a_event->source || !a_event->target || a_event->projectile) {
+            return RES::kContinue;
         }
-        else {
-            result = false;
+        auto defender = a_event->target->As<RE::Actor>();
+        if (!defender || !defender->GetHighProcess()) {
+            return RES::kContinue;
         }
+        auto aggressor = a_event->cause->As<RE::Actor>();
+        if (!aggressor || !aggressor->GetHighProcess()) {
+            return RES::kContinue;
+        }
+        bool hitBlocked = a_event->flags.any(HitFlag::kHitBlocked);
+        if (!hitBlocked) {
+            return RES::kContinue;
+        }
+        RE::TESObjectWEAP* attacking_weap = RE::TESForm::LookupByID<RE::TESObjectWEAP>(a_event->source);
+        if (!attacking_weap || !attacking_weap->IsMelee()) {
+            return RES::kContinue;            
+        }
+
+        const bool isH2H = attacking_weap->IsHandToHandMelee();
+        const auto leftHand = defender->GetEquippedObject(true);
+        const auto rightHand = defender->GetEquippedObject(false);
+
+        if (leftHand && leftHand->IsArmor()) {
+            ProcessParry(aggressor, defender, isH2H);
+        }
+        else if (rightHand && rightHand->IsWeapon()) {
+            if (!Config::Options::only_shield_timed_block.GetValue()) {
+                ProcessParry(aggressor, defender, isH2H);
+            }
+            else {
+                if (!isH2H) {
+                    defender->PlaceObjectAtMe(Config::Forms::timed_block_explosion, false);                    
+                }
+                IncreaseTBCounter();                   
+            }
+        }
+        return RES::kContinue;
     }
+    void TimedBlock::ProcessParry(RE::Actor* a_aggressor, RE::Actor* a_target, bool attackedByHandToHand)
+    {
+        if (!ActorUtil::IsEffectActive(a_target, Config::Forms::mgef_parry_window)) {
+            return;
+        }
+        if(!attackedByHandToHand)
+            a_target->PlaceObjectAtMe(Config::Forms::timed_block_explosion, false);
 
-    return result;
+        MagicUtil::ApplySpell(a_target, a_target, Config::Forms::spell_parry_buff);
+        IncreaseTBCounter();
+
+        if (!CanStaggerWithPerkLock(a_target)) {
+            return;
+        }
+        for (auto& enemy : ActorUtil::GetNearbyActors(a_target, Config::Options::stagger_distance.GetValue(), false)) {
+            if (enemy != a_aggressor && enemy != a_target) {
+                if (enemy->Is3DLoaded() && !enemy->IsDead()) {
+                    MagicUtil::ApplySpell(a_target, enemy, Config::Forms::spell_parry);
+                }
+            }
+            MagicUtil::ApplySpell(a_target, a_aggressor, Config::Forms::spell_parry);
+        }
+        
+    }
+    bool TimedBlock::IsStaggerPerkLocked() const
+    {
+        if (Config::Options::perk_locked_stagger.GetValue()) {
+            if (Config::Forms::stagger_perk) {
+                return true;
+            }
+        }
+        return false;
+    }
+    bool TimedBlock::CanStaggerWithPerkLock(RE::Actor* a_target) const
+    {
+        if (IsStaggerPerkLocked()) {
+            return a_target->HasPerk(Config::Forms::stagger_perk);
+        }
+        return true;
+    }
+    void TimedBlock::IncreaseTBCounter()
+    {
+        if (Config::Forms::timed_block_counter_glob)
+            MathUtil::AddWithCap(Config::Forms::timed_block_counter_glob->value, 1.f, 5000.f);
+    }
 }
