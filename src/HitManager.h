@@ -13,5 +13,6 @@ namespace Events {
         bool IsStaggerPerkLocked() const;
         bool CanStaggerWithPerkLock(RE::Actor* a_target) const;
         void IncreaseTBCounter();
+        void SendTBModEvent(RE::Actor* a_defender, RE::Actor* a_attacker);
     };
 }

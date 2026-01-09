@@ -32,8 +32,7 @@ namespace Config {
         static inline RE::EffectSetting* mgef_parry_window;
         static inline RE::BGSExplosion* timed_block_explosion;
         static inline RE::BGSPerk* stagger_perk;
-        static inline RE::TESGlobal* timed_block_counter_glob;
-        
+        static inline RE::TESGlobal* timed_block_counter_glob;        
 
         RE::TESForm* LoadPerkFromConfigWithFallback(const std::string& form_string, RE::FormID a_fallbackID, const std::string& a_fallbackModName = MOD::MOD_FILE.data()) {
             if (!form_string.empty()) {
@@ -80,12 +79,6 @@ namespace Config {
             else {
                 logger::debug("Perk loaded is: {}", stagger_perk->GetName());
             }
-
-
-
-
-
-
         }
 
     };

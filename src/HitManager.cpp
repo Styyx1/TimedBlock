@@ -67,6 +67,9 @@ namespace Events {
         if (!CanStaggerWithPerkLock(a_target)) {
             return;
         }
+        if(a_target->IsPlayerRef())
+            SendTBModEvent(a_target, a_aggressor);
+
         for (auto& enemy : ActorUtil::GetNearbyActors(a_target, Config::Options::stagger_distance.GetValue(), false)) {
             if (enemy != a_aggressor && enemy != a_target) {
                 if (enemy->Is3DLoaded() && !enemy->IsDead()) {
@@ -75,7 +78,7 @@ namespace Events {
             }
             MagicUtil::ApplySpell(a_target, a_aggressor, Config::Forms::spell_parry);
         }
-        
+         
     }
     bool TimedBlock::IsStaggerPerkLocked() const
     {
@@ -97,5 +100,15 @@ namespace Events {
     {
         if (Config::Forms::timed_block_counter_glob)
             MathUtil::AddWithCap(Config::Forms::timed_block_counter_glob->value, 1.f, 5000.f);
+    }
+    void TimedBlock::SendTBModEvent(RE::Actor* a_defender, RE::Actor* a_attacker)
+    {
+        const auto attackerID = a_attacker ? a_attacker->GetFormID() : 0x0;
+        const auto level = a_attacker ? a_attacker->GetLevel() : uint16_t(0);
+        const float level_arg = static_cast<float>(level);
+        const SKSE::ModCallbackEvent modEvent{ .eventName = RE::BSFixedString("STBL_OnTimedBlockDefender"), .strArg = RE::BSFixedString(std::to_string(attackerID)), .numArg = level_arg, .sender = a_defender };
+        const SKSE::ModCallbackEvent modEventATK{ .eventName = RE::BSFixedString("STBL_OnTimedBlockAttacker"), .strArg = RE::BSFixedString(), .numArg = level_arg, .sender = a_attacker };
+        SKSE::GetModCallbackEventSource()->SendEvent(&modEvent);
+        SKSE::GetModCallbackEventSource()->SendEvent(&modEventATK);
     }
 }

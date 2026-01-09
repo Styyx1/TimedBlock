@@ -29,7 +29,7 @@ void Listener(SKSE::MessagingInterface::Message* message) noexcept
 {
     if (message->type == SKSE::MessagingInterface::kDataLoaded) {
 
-        SKSE::Translation::ParseTranslation("SimpleTimedBlock");
+        //SKSE::Translation::ParseTranslation("SimpleTimedBlock");
         Menu::RegisterTBMenu();
         Menu::TranslateMenu();
         Config::Forms::GetSingleton()->LoadForms();
